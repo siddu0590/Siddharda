@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>6G Dashboard</title>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+    }
+
+    header {
+      background-color: #20232a;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+
+    .card {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem;
+      flex: 1 1 300px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #444;
+    }
+
+    .value {
+      font-size: 2em;
+      color: #007bff;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #e9ecef;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>6G Network Dashboard</h1>
+    <p>Live Overview of 6G Metrics</p>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h3>Signal Strength</h3>
+      <p class="value" id="signalStrength">-</p>
+    </div>
+
+    <div class="card">
+      <h3>Bandwidth Usage (Gbps)</h3>
+      <p class="value" id="bandwidthUsage">-</p>
+    </div>
+
+    <div class="card">
+      <h3>Latency (ms)</h3>
+      <p class="value" id="latency">-</p>
+    </div>
+
+    <div class="card" style="flex: 1 1 100%;">
+      <h3>Real-time Data Usage</h3>
+      <canvas id="usageChart"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 6G Dashboard. All rights reserved.
+  </footer>
+
+  <script>
+    // Simulated real-time metric updates
+    function getRandomValue(min, max) {
+      return (Math.random() * (max - min) + min).toFixed(2);
+    }
+
+    function updateMetrics() {
+      document.getElementById('signalStrength').textContent = getRandomValue(-90, -40) + " dBm";
+      document.getElementById('bandwidthUsage').textContent = getRandomValue(10, 100);
+      document.getElementById('latency').textContent = getRandomValue(1, 10);
+    }
+
+    setInterval(updateMetrics, 2000);
+    updateMetrics(); // Initial update
+
+    // Chart setup
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    const usageChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 10}, (_, i) => `T-${10 - i}`),
+        datasets: [{
+          label: 'Data Usage (Gbps)',
+          data: Array(10).fill(0).map(() => getRandomValue(10, 100)),
+          backgroundColor: 'rgba(0, 123, 255, 0.2)',
+          borderColor: 'rgba(0, 123, 255, 1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Gbps'
+            }
+          }
+        }
+      }
+    });
+
+    // Update chart data every 3 seconds
+    setInterval(() => {
+      usageChart.data.datasets[0].data.shift();
+      usageChart.data.datasets[0].data.push(getRandomValue(10, 100));
+      usageChart.update();
+    }, 3000);
+  </script>
+</body>
+</html>
